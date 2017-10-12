@@ -1,6 +1,6 @@
 package handlers
 
-import "info344-in-class/zipsvr/models"
+import "victoriajuan/info344-in-class/zipsvr/models"
 import "net/http"
 import "strings"
 import "encoding/json"
