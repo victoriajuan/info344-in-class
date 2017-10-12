@@ -9,9 +9,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/victoriajuan/info344-in-class/zipsvr/handlers"
+	"info344-in-class/zipsvr/handlers"
 
-	"github.com/victoriajuan/info344-in-class/zipsvr/models"
+	"info344-in-class/zipsvr/models"
 )
 
 const zipsPath = "/zips/"
