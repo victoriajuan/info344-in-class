@@ -38,15 +38,22 @@ func showUsage() {
 //there was an error reading from the stream.
 func sign(signingKey string, stream io.Reader) (string, error) {
 	//TODO: implement this function according to the comments
+	//HINTS:
+	//https://drstearns.github.io/tutorials/sessions/#secdigitalsignatureswithhmac
+	//https://golang.org/pkg/crypto/hmac/
+	//https://golang.org/pkg/io/#Copy
+	//https://golang.org/pkg/encoding/base64/
 	return "", fmt.Errorf("TODO")
 }
 
 //verify returns true if the base64-encoded HMAC `signature`
 //matches the bytes read from `stream`, or false if otherwise.
 //If there is an error decoding the base64 signature, or reading
-// from `stream`, this will return false and the error.
+//from `stream`, this will return false and the error.
 func verify(signingKey string, signature string, stream io.Reader) (bool, error) {
 	//TODO: implement this function according to the comments
+	//HINTS: (same as above plus the following)
+	//https://golang.org/pkg/crypto/subtle/#ConstantTimeCompare
 	return false, fmt.Errorf("TODO")
 }
 
