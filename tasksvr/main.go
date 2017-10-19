@@ -33,7 +33,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/tasks", handlerCtx.TasksHandler)
-	//mux.HandleFunc("/v1/tasks/", TODO: add SpecificTaskHandler )
+	mux.HandleFunc("/v1/tasks/", handlerCtx.SpecificTaskHandler)
 
 	fmt.Printf("server is listening at http://%s...\n", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))
