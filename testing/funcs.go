@@ -59,7 +59,6 @@ func GetGreeting(name string) string {
 //will be set to zero
 func ParseSize(size string) *Size {
 	nums := strings.Split(size, "x")
-	//handle outOFBoundary case
 	if len(nums) < 2 {
 		return &Size{}
 	}

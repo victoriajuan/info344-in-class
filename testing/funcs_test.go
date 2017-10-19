@@ -5,7 +5,6 @@ import (
 )
 
 func TestReverse(t *testing.T) {
-	//annoymous struct
 	cases := []struct {
 		name           string
 		input          string
@@ -27,7 +26,7 @@ func TestReverse(t *testing.T) {
 			expectedOutput: "ba",
 		},
 		{
-			name:           "palindrome",
+			name:           "stressed",
 			input:          "stressed",
 			expectedOutput: "desserts",
 		},
@@ -81,11 +80,20 @@ func TestParseSize(t *testing.T) {
 			input:          "",
 			expectedOutput: &Size{},
 		},
+		{
+			name:           "valid",
+			input:          "10x20",
+			expectedOutput: &Size{10, 20},
+		},
+		{
+			name:           "invalid height",
+			input:          "10xfoo",
+			expectedOutput: &Size{10, 0},
+		},
 	}
 
 	for _, c := range cases {
-		if output := ParseSize(c.input); output.Height !=
-			c.expectedOutput.Height || output.Width != c.expectedOutput.Width {
+		if output := ParseSize(c.input); output.Height != c.expectedOutput.Height || output.Width != c.expectedOutput.Width {
 			t.Errorf("%s: got %v but expected %v", c.name, output, c.expectedOutput)
 		}
 	}
@@ -93,6 +101,8 @@ func TestParseSize(t *testing.T) {
 
 func TestLateDaysConsume(t *testing.T) {
 	ld := NewLateDays()
+	//Consume() should return 3 then 2 then 1 then 0
+	//then continue to return 0 after that
 	for i := 3; i > -10; i-- {
 		expectedOutput := i
 		if expectedOutput < 0 {
