@@ -22,6 +22,7 @@ type MongoStore struct {
 	session *mgo.Session
 	dbname  string
 	colname string
+	col     *mgo.Collection
 }
 
 //NewMongoStore constructs a new MongoStore
@@ -33,6 +34,7 @@ func NewMongoStore(sess *mgo.Session, dbName string, collectionName string) *Mon
 		session: sess,
 		dbname:  dbName,
 		colname: collectionName,
+		col:     sess.DB(dbName).C(collectionName),
 	}
 }
 
@@ -42,8 +44,7 @@ func (s *MongoStore) Insert(nt *NewTask) (*Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	col := s.session.DB(s.dbname).C(s.colname)
-	if err := col.Insert(task); err != nil {
+	if err := s.col.Insert(task); err != nil {
 		return nil, fmt.Errorf("error inserting task: %v", err)
 	}
 	return task, nil
@@ -53,8 +54,7 @@ func (s *MongoStore) Insert(nt *NewTask) (*Task, error) {
 func (s *MongoStore) GetAll(completed bool) ([]*Task, error) {
 	tasks := []*Task{}
 	filter := &completedFilter{completed}
-	col := s.session.DB(s.dbname).C(s.colname)
-	if err := col.Find(filter).Limit(AllTasksLimit).All(&tasks); err != nil {
+	if err := s.col.Find(filter).Limit(AllTasksLimit).All(&tasks); err != nil {
 		return nil, fmt.Errorf("error getting tasks: %v", err)
 	}
 	return tasks, nil
@@ -71,8 +71,7 @@ func (s *MongoStore) Update(id bson.ObjectId, tu *TaskUpdates) (*Task, error) {
 		ReturnNew: true,
 	}
 	task := &Task{}
-	col := s.session.DB(s.dbname).C(s.colname)
-	if _, err := col.FindId(id).Apply(change, task); err != nil {
+	if _, err := s.col.FindId(id).Apply(change, task); err != nil {
 		return nil, fmt.Errorf("error updating task: %v", err)
 	}
 	return task, nil
