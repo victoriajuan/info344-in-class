@@ -9,6 +9,9 @@ import (
 
 //Task represents an existing task stored in the database
 type Task struct {
+	//the bson:"_id" field tag causes that field to be saved
+	//as _id in MongoDB. Properties named _id are indexed by
+	//default as the unique identifier for the document
 	ID         bson.ObjectId `json:"id,omitempty" bson:"_id"`
 	Title      string        `json:"title,omitempty"`
 	Completed  bool          `json:"completed,omitempty"`
@@ -27,6 +30,8 @@ type NewTask struct {
 
 //Validate validates a NewTask
 func (nt *NewTask) Validate() error {
+	//for this little demo, the only validation
+	//we will do is ensure a non-zero-length title
 	if len(nt.Title) == 0 {
 		return fmt.Errorf("missing task title")
 	}
@@ -35,17 +40,21 @@ func (nt *NewTask) Validate() error {
 
 //ToTask validates and converts a NewTask to a Task
 func (nt *NewTask) ToTask() (*Task, error) {
+	//call validate and return any errors
 	if err := nt.Validate(); err != nil {
 		return nil, err
 	}
 
-	now := time.Now()
+	//create a new Task struct, and populate
+	//the fields with those from the NewTask,
+	//defaulting the other fields to appropriate
+	//values.
 	task := &Task{
-		ID:        bson.NewObjectId(),
+		ID:        bson.NewObjectId(), //new unique ID
 		Title:     nt.Title,
-		Completed: false,
+		Completed: false, //all new tasks are uncompleted
 		Tags:      nt.Tags,
-		CreatedAt: now,
+		CreatedAt: time.Now(), //capture when this was created
 	}
 	return task, nil
 }

@@ -6,11 +6,10 @@ import (
 
 //Context holds context values
 //used by multiple handler functions.
+//see https://drstearns.github.io/tutorials/gohandlerctx/
 type Context struct {
-	//TODO: add a field that will hold
-	//a tasks.Store implementation.
-	//Our handlers will use this to
-	//insert, update, and get tasks
+	//the tasks.Store to use for inserting,
+	//getting, and updating tasks
 	tasksStore tasks.Store
 }
 
