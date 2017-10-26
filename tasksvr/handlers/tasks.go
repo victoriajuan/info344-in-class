@@ -33,7 +33,8 @@ func (ctx *Context) TasksHandler(w http.ResponseWriter, r *http.Request) {
 
 		task, err := ctx.tasksStore.Insert(nt)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("error inserting task: &v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("error inserting task: %v", err), http.StatusInternalServerError)
+			return
 		}
 		respond(w, task)
 	default:
@@ -44,8 +45,12 @@ func (ctx *Context) TasksHandler(w http.ResponseWriter, r *http.Request) {
 
 //SpecificTaskHandler handles requests for the /v1/tasks/...task-id... resource
 func (ctx *Context) SpecificTaskHandler(w http.ResponseWriter, r *http.Request) {
+	//get the last segment of the requested resource path,
+	//which is a hexadecimal string representation of the binary bson.ObjectId
 	id := path.Base(r.URL.Path)
+	//convert that hexadecimal Task ID string to a bson.ObjectId
 	oid := bson.ObjectIdHex(id)
+
 	switch r.Method {
 	case "PATCH":
 		//TODO: decode the request body into a
@@ -56,11 +61,12 @@ func (ctx *Context) SpecificTaskHandler(w http.ResponseWriter, r *http.Request) 
 			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err), http.StatusBadRequest)
 			return
 		}
-		tasks, err := ctx.tasksStore.Update(oid, tu); err != nil {
-			http.Error(w, fmt.Sprintf("error updatring task: %v", err), http.StatusInternalServerError)
+		task, err := ctx.tasksStore.Update(oid, tu)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("error updating task: %v", err), http.StatusInternalServerError)
 			return
 		}
-		respons(w, task)
+		respond(w, task)
 	default:
 		http.Error(w, "method must be PATCH", http.StatusMethodNotAllowed)
 		return
