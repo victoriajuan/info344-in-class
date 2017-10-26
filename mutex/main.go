@@ -9,7 +9,7 @@ import (
 
 func client(index int, c *Cache) {
 	for {
-		time.Sleep(time.Millisecond * time.Duration(rand.Intn(50)))
+		time.Sleep(time.Millisecond * time.Duration(rand.Intn(10)))
 		key := strconv.Itoa(rand.Intn(10))
 		value := key + " value"
 
