@@ -14,8 +14,7 @@ type entry struct {
 //Cache is a TTL cache that is safe for concurrent use
 type Cache struct {
 	entries map[string]*entry
-	//TODO: protect this for concurrent use!
-	mx sync.RWMutex
+	mx      sync.RWMutex
 }
 
 //NewCache constructs a new Cache object
@@ -23,21 +22,19 @@ func NewCache() *Cache {
 	c := &Cache{
 		entries: map[string]*entry{},
 	}
-	go.c.janitor()
+	go c.janitor()
 	return c
 }
 
 //Set adds a key/value to the cache
 func (c *Cache) Set(key string, value string, timeToLive time.Duration) {
 	c.mx.Lock()
-	//defer keywords means?
 	defer c.mx.Unlock()
 	c.entries[key] = &entry{value, time.Now().Add(timeToLive)}
 }
 
 //Get gets the value associated with a key
 func (c *Cache) Get(key string) (string, bool) {
-	//TODO: implement this
 	c.mx.RLock()
 	defer c.mx.RUnlock()
 	entry, found := c.entries[key]
@@ -60,7 +57,6 @@ func (c *Cache) janitor() {
 				delete(c.entries, key)
 			}
 		}
-
 		c.mx.Unlock()
 	}
 }
