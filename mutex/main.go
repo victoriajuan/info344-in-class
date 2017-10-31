@@ -9,8 +9,8 @@ import (
 
 func client(index int, c *Cache) {
 	for {
-		time.Sleep(time.Millisecond * time.Duration(rand.Intn(10)))
-		key := strconv.Itoa(rand.Intn(10))
+		time.Sleep(time.Millisecond * time.Duration(rand.Intn(50)))
+		key := strconv.Itoa(rand.Intn(10000))
 		value := key + " value"
 
 		log.Printf("client %d setting %s=%s", index, key, value)
