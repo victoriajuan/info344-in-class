@@ -43,14 +43,14 @@ func main() {
 	timesvcAddrs := os.Getenv("TIMESVC_ADDRS")
 	splitTimeSvcAddrs := strings.Split(timesvcAddrs, ",")
 
-	htllosvcAddrs := os.Getenv("HELLOSVC_ADDRS")
-	splitTimeSvcAddrs := strings.Split(htllosvcAddrs, ",")
+	hellosvcAddrs := os.Getenv("HELLOSVC_ADDRS")
+	splitHelloSvcAddrs := strings.Split(hellosvcAddrs, ",")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", RootHandler)
 	//TODO: add reverse proxy handler for `/v1/time`
 	mux.Handle("/v1/time", NewServiceProxy(splitTimeSvcAddrs))
-	mux.Handle("/v1/hello", NewServiceProxy(splitTimeSvcAddrs))
+	mux.Handle("/v1/hello", NewServiceProxy(splitHelloSvcAddrs))
 
 	log.Printf("server is listening at https://%s...", addr)
 	log.Fatal(http.ListenAndServeTLS(addr, "tls/fullchain.pem", "tls/privkey.pem", mux))
