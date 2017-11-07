@@ -15,7 +15,7 @@ const mongoURL = `mongodb://${mongoAddr}/tasks`;
 mongodb.MongoClient.connect(mongoURL)
     .then(db => {
         //initialize a new task store
-        let taskStore = new MongoStore(db);
+        let taskStore = new MongoStore(db, "tasks");
 
         //parses posted JSON and makes
         //it available from req.body
@@ -24,19 +24,39 @@ mongodb.MongoClient.connect(mongoURL)
         app.post("/v1/tasks", (req, res) => {
             //insert a new task
             //use taskStore.insert()
+            let task = {
+                title: req.body.title,
+                completed: false
+            }
+            taskStore.insert(task)
+                .then(task => {
+                    res.json(task);
+                })
+                .catch(err => {
+                    throw err;
+                });
         });
 
         app.get("/v1/tasks", (req, res) => {
             //return all not-completed tasks in the database
+            taskStore.getAll(false)
+                .then(tasks => {
+                    res.json(tasks);
+                })
+                .catch(err => {
+                    throw err;
+                });
         });
 
         app.patch("/v1/tasks/:taskID", (req, res) => {
-            let taskIDToFetch = req.params.taskID;
+            let taskIDToUpdate = req.params.taskID;
             //update single task by id
         });
 
         app.listen(port, host, () => {
             console.log(`server is listening at http://${addr}....`);
         });
+    })
+    .catch(err => {
+        throw err;
     });
-
