@@ -49,8 +49,17 @@ mongodb.MongoClient.connect(mongoURL)
         });
 
         app.patch("/v1/tasks/:taskID", (req, res) => {
-            let taskIDToUpdate = req.params.taskID;
-            //update single task by id
+            let taskIDToUpdate = new mongodb.ObjectID(req.params.taskID);
+            let updates = {
+                completed: req.body.completed
+            };
+            taskStore.update(taskIDToUpdate, updates)
+                .then(updatedTask => {
+                    res.json(updatedTask);
+                })
+                .catch(err => {
+                    throw err;
+                });
         });
 
         app.listen(port, host, () => {
