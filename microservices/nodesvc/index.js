@@ -1,20 +1,19 @@
-//@ts-check
+// @ts-check
 "use strict";
 
 //load the express and morgan modules
-const express = require("express")
-const morgan = require("morgan")
+const express = require("express");
+const morgan = require("morgan");
 
 const addr = process.env.ADDR || ":80";
 const [host, port] = addr.split(":");
 const portNum = parseInt(port);
 
 const app = express();
-//handler
 app.use(morgan(process.env.LOG_FORMAT || "dev"));
 
 app.get("/", (req, res) => {
-    res.set("Content-Type", "text/plain")
+    res.set("Content-Type", "text/plain");
     res.send("Hello, Node.js!");
 });
 
@@ -25,7 +24,7 @@ app.get("/v1/users/me/hello", (req, res) => {
     }
     let user = JSON.parse(userJSON);
     res.json({
-        message: `Hello, ${user.firName} ${user.lastName}`
+        message: `Hello, ${user.firstName} ${user.lastName}`
     });
 });
 
