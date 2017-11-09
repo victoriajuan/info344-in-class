@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +11,18 @@ import (
 	"sync"
 )
 
+type User struct {
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+}
+
+func GetCurrentUser(r *http.Request) *User {
+	return &User{
+		FirstName: "Test",
+		LastName:  "User",
+	}
+}
+
 func NewServiceProxy(addrs []string) *httputil.ReverseProxy {
 	nextIndex := 0
 	mx := sync.Mutex{}
@@ -17,6 +30,12 @@ func NewServiceProxy(addrs []string) *httputil.ReverseProxy {
 		Director: func(r *http.Request) {
 			//modify the request to indicate
 			//remote host
+			user := GetCurrentUser(r)
+			userJSON, err := json.Marshal(user)
+			if err != nil {
+				log.Printf("error marshaling user: %v", err)
+			}
+			r.Header.Add("X-User", string(userJSON))
 			mx.Lock()
 			r.URL.Host = addrs[nextIndex%len(addrs)]
 			nextIndex++
@@ -43,6 +62,9 @@ func main() {
 	timesvcAddrs := os.Getenv("TIMESVC_ADDRS")
 	splitTimeSvcAddrs := strings.Split(timesvcAddrs, ",")
 
+	nodeSvcAddrs := os.Getenv("NODESVC_ADDRS")
+	splitNodeSvcAddrs := strings.Split(nodeSvcAddrs, ",")
+
 	hellosvcAddrs := os.Getenv("HELLOSVC_ADDRS")
 	splitHelloSvcAddrs := strings.Split(hellosvcAddrs, ",")
 
@@ -51,6 +73,8 @@ func main() {
 	//TODO: add reverse proxy handler for `/v1/time`
 	mux.Handle("/v1/time", NewServiceProxy(splitTimeSvcAddrs))
 	mux.Handle("/v1/hello", NewServiceProxy(splitHelloSvcAddrs))
+	// mux.Handle("/v1/users/me/hello", NewServiceProxy(splitNodeSvcAddrs))
+	mux.Handle("/v1/channels", NewServiceProxy(splitNodeSvcAddrs))
 
 	log.Printf("server is listening at https://%s...", addr)
 	log.Fatal(http.ListenAndServeTLS(addr, "tls/fullchain.pem", "tls/privkey.pem", mux))
