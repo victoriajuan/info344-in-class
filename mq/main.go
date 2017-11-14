@@ -30,9 +30,10 @@ func main() {
 		log.Fatalf("error creating channel: %v", err)
 	}
 	q, err := channel.QueueDeclare("testQ", false, false, false, false, nil)
-	msgs, err := channel.Consume(q.Name, "", true, false, false, false, nil)
 
+	msgs, err := channel.Consume(q.Name, "", true, false, false, false, nil)
 	go listen(msgs)
+
 	neverEnd := make(chan bool)
 	<-neverEnd
 }
